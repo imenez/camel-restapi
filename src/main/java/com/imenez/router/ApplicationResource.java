@@ -11,14 +11,13 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationResource  extends RouteBuilder {
+public class ApplicationResource extends RouteBuilder {
 
     @Autowired
     private OrderService service;
 
     @BeanInject
     private OrderProcessor processor;
-
 
 
     /* Autowired or constructor inj.
@@ -35,7 +34,7 @@ public class ApplicationResource  extends RouteBuilder {
 
         //Get Request
         rest().get("/hellow").produces(MediaType.APPLICATION_JSON_VALUE).route()
-                .setBody(constant("hi fella!"));
+                .setBody(simple("hi fella!"));
 
         rest().get("/getOrders").produces(MediaType.APPLICATION_JSON_VALUE).type(Order.class).route()
                 .setBody(constant(service.getOrders())).endRest();
@@ -55,6 +54,16 @@ public class ApplicationResource  extends RouteBuilder {
 
         rest().post("/addOrder").produces(MediaType.APPLICATION_JSON_VALUE)
                 .type(Order.class).outType(Order.class).route().process(processor).endRest();
+
+
+        /*
+        logging and getting data from body with type
+
+         rest().post("/addOrder").produces(MediaType.APPLICATION_JSON_VALUE)
+         .type(Order.class).outType(Order.class).route().process(processor)
+         .to("log:mylogger?showAll=true").transform(simple("Name: ${body.name} \nPrice: ${body.price}")).endRest();
+
+         */
 
     }
 }
